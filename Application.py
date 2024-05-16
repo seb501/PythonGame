@@ -10,7 +10,7 @@ class Game:
         self.screen = pygame.display.set_mode((640,480))
 
         self.clock = pygame.time.Clock()
-
+        
     def run(self):
         while True:
             for event in pygame.event.get():
