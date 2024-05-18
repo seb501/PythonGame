@@ -10,8 +10,14 @@ class Game:
         self.screen = pygame.display.set_mode((640,480))
 
         self.clock = pygame.time.Clock()
-        
+        self.collision_area = pygame.Rect(50,50,300,50)
     def run(self):
+
+        self.screen.fill((13,219,248))
+
+        
+
+
         while True:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
