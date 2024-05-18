@@ -19,6 +19,7 @@ class Game:
 
         self.screen.fill((13,219,248))
 
+        
         self.screen.blit(self.img, self.img_pos)
 
 
