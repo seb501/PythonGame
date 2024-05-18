@@ -19,18 +19,25 @@ class Game:
 
         self.screen.fill((13,219,248))
 
-        
+
         self.screen.blit(self.img, self.img_pos)
 
 
 
 
         while True:
+
+
+
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit()
 
+
+            keys = pygame.key.get_pressed()
+
+            
             pygame.display.update()
             self.clock.tick(60)
 
