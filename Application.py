@@ -9,13 +9,19 @@ class Game:
         pygame.display.set_caption("Demo")
         self.screen = pygame.display.set_mode((640,480))
 
+
+        self.img = pygame.image.load('data/images/clouds/cloud_1.png')
         self.clock = pygame.time.Clock()
         self.collision_area = pygame.Rect(50,50,300,50)
+
+        self.img_pos = [160,260]
     def run(self):
 
         self.screen.fill((13,219,248))
 
-        
+        self.screen.blit(self.img, self.img_pos)
+
+
 
 
         while True:
