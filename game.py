@@ -1,6 +1,8 @@
 import sys
 import pygame
-
+from scripts.entities import PhysicsEntity
+from scripts.utils import load_image, load_images
+from scripts.tilemap import Tilemap
 
 class Game:
     def __init__(self):
@@ -9,35 +11,50 @@ class Game:
         pygame.display.set_caption("Demo")
         self.screen = pygame.display.set_mode((640,480))
 
-
-        self.img = pygame.image.load('data/images/clouds/cloud_1.png')
+        self.display = pygame.Surface((320,240))
+        
         self.clock = pygame.time.Clock()
-        self.collision_area = pygame.Rect(50,50,300,50)
-
-        self.img_pos = [160,260]
+        
+        self.movement = [False, False]
+        self.assets = {
+            'decor': load_images('tiles/decor'),
+            'grass': load_images('tiles/grass'),
+            'large_decor': load_images('tiles/large_decor'),
+            'stone': load_images('tiles/stone'),
+            'player': load_image('entities/player.png')
+        }
+        
+        self.player = PhysicsEntity(self, 'player' , (50,50), (8,15))
+        self.tilemap = Tilemap(self, tile_size=16)
     def run(self):
 
-        self.screen.fill((13,219,248))
-
-
-        self.screen.blit(self.img, self.img_pos)
-
-
-
-
+     
         while True:
-
-
-
+            
+            self.display.fill((53,119,208))
+            self.tilemap.render(self.display)
+            self.player.update((self.movement[1] - self.movement[0], 0))
+            self.player.render(self.display)
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit()
 
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_LEFT:
+                        self.movement[0] = True
+                    if event.key == pygame.K_RIGHT:
+                        self.movement[1] = True
+                if event.type == pygame.KEYUP:
+                    if event.key == pygame.K_LEFT:
+                        self.movement[0] = False
+                    if event.key == pygame.K_RIGHT:
+                        self.movement[1] = False
+               
 
             keys = pygame.key.get_pressed()
 
-            
+            self.screen.blit(pygame.transform.scale(self.display, self.screen.get_size()), (0,0))
             pygame.display.update()
             self.clock.tick(60)
 
