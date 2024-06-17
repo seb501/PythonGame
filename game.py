@@ -35,6 +35,7 @@ class Game:
         
         self.player = Player(self , (50,50), (8,15))
         self.tilemap = Tilemap(self, tile_size=16)
+        self.tilemap.load('map.json')
         self.scroll = [0,0]
         self.Clouds =  Clouds(self.assets['clouds'], count =  15)
 
@@ -65,16 +66,16 @@ class Game:
                     sys.exit()
 
                 if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_LEFT:
+                    if event.key == pygame.K_a:
                         self.movement[0] = True
-                    if event.key == pygame.K_RIGHT:
+                    if event.key == pygame.K_d:
                         self.movement[1] = True
-                    if event.key == pygame.K_UP:
+                    if event.key == pygame.K_SPACE:
                         self.player.velocity[1] = -3
                 if event.type == pygame.KEYUP:
-                    if event.key == pygame.K_LEFT:
+                    if event.key == pygame.K_a:
                         self.movement[0] = False
-                    if event.key == pygame.K_RIGHT:
+                    if event.key == pygame.K_d:
                         self.movement[1] = False
                
 
