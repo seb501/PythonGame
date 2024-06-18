@@ -85,6 +85,8 @@ class Player(PhysicsEntity):
     def update(self, tilemap, movement= (0,0)):
         super().update(tilemap, movement=movement)
         self.air_time += 1
+
+        #amount of jumps for player
         if self.collisions['down']:
             self.air_time = 0
             self.jumps = 1
@@ -99,8 +101,7 @@ class Player(PhysicsEntity):
                 self.flip = True
             self.set_action('wall_slide')
 
-        if not self.wall_slide:
-            
+        if not self.wall_slide:  
             if self.air_time > 4:
                 self.set_action('jump')
             elif movement[0] != 0:
@@ -121,6 +122,8 @@ class Player(PhysicsEntity):
             pvelocity = [math.cos(angle) * speed, math.sin(angle) * speed]
             self.game.particles.append(Particle(self.game, 'particle', self.rect().center, velocity=pvelocity, frame= random.randint(0,7)))
 
+
+        #normalize velocity after jumps back to 0
         if self.velocity[0] > 0:
             self.velocity[0] = max(self.velocity[0] - 0.1, 0)
         else:
