@@ -2,6 +2,7 @@ import sys
 import random
 import math
 import pygame
+import os
 from scripts.entities import PhysicsEntity, Player, Enemy
 from scripts.utils import load_image, load_images, Animation
 from scripts.tilemap import Tilemap
@@ -40,12 +41,28 @@ class Game:
             'gun': load_image('gun.png'),
             'projectile': load_image('projectile.png')
         }
+
+        self.sfx = {
+            'jump': pygame.mixer.Sound('data/sfx/jump.wav'),
+            'dash': pygame.mixer.Sound('data/sfx/dash.wav'),
+            'hit': pygame.mixer.Sound('data/sfx/hit.wav'),
+            'shoot': pygame.mixer.Sound('data/sfx/shoot.wav'),
+            'ambience': pygame.mixer.Sound('data/sfx/ambience.wav'),
+        }
+
+        self.sfx['ambience'].set_volume(0.3)
+        self.sfx['shoot'].set_volume(0.4)
+        self.sfx['hit'].set_volume(0.4)
+        self.sfx['dash'].set_volume(0.2)
+        self.sfx['jump'].set_volume(0.1)
         
         self.player = Player(self , (50,50), (8,15))
         self.tilemap = Tilemap(self, tile_size=16)
         self.Clouds =  Clouds(self.assets['clouds'], count =  15)
         self.screenshake = 0
-        self.load_level(0)
+        self.level = 0
+        self.load_level(self.level)
+        
 
        
         
@@ -73,10 +90,14 @@ class Game:
 
         self.scroll = [0,0]
         self.dead = 0
-
+        self.transition = -30
 
     def run(self):
+        pygame.mixer.music.load('data/music.wav')
+        pygame.mixer.music.set_volume(0.2)
+        pygame.mixer.music.play(-1)
 
+        self.sfx['ambience'].play(-1)
      
         while True:
             
@@ -84,10 +105,21 @@ class Game:
 
             self.screenshake = max(0, self.screenshake - 1)
 
+
+            if not len(self.enemies):
+                self.transition += 1
+                if self.transition > 30:
+                    self.level += min(self.level + 1, len(os.listdir('data/maps')) - 1)
+                    self.load_level(self.level)
+            if self.transition < 0:
+                self.transition += 1
+
             if self.dead:
                 self.dead += 1
+                if self.dead == 10:
+                    self.transition = min(30,self.transition + 1)
                 if self.dead > 40:
-                    self.load_level(0)
+                    self.load_level(self.level)
             #Camera
             self.scroll[0] += (self.player.rect().centerx - self.display.get_width() / 2 - self.scroll[0]) / 26
             self.scroll[1] += (self.player.rect().centery - self.display.get_height() / 2 - self.scroll[1]) / 26
@@ -117,7 +149,7 @@ class Game:
                 self.player.update(self.tilemap, (self.movement[1] - self.movement[0], 0))
                 self.player.render(self.display, offset=render_scroll)
 
-            # [[x, y], direction, timer]
+            # [[x, y], direction, timer] Projectile
             for projectile in self.projectiles.copy():
                 projectile[0][0] += projectile[1]
                 projectile[2] += 1
@@ -130,9 +162,12 @@ class Game:
                 elif projectile[2] > 360:
                     self.projectiles.remove(projectile)
                 elif abs(self.player.dashing) < 50:
+
+                    #Player hit detection
                     if self.player.rect().collidepoint(projectile[0]):
                         self.projectiles.remove(projectile)
                         self.dead += 1
+                        self.sfx['hit'].play()
                         self.screenshake = max(16, self.screenshake)
                         for i in range(30):
                             angle = random.random() * math.pi * 2
@@ -169,7 +204,8 @@ class Game:
                     if event.key == pygame.K_d:
                         self.movement[1] = True
                     if event.key == pygame.K_SPACE:
-                        self.player.jump()
+                        if self.player.jump():
+                            self.sfx['jump'].play()
                     if event.key == pygame.K_v:
                         self.player.dash()
                 if event.type == pygame.KEYUP:
@@ -177,8 +213,11 @@ class Game:
                         self.movement[0] = False
                     if event.key == pygame.K_d:
                         self.movement[1] = False
-               
-
+            if self.transition:
+                transition_surf = pygame.Surface(self.display.get_size())
+                pygame.draw.circle(transition_surf, (255, 255, 255), (self.display.get_width() // 2, self.display.get_height() // 2), (30 - abs(self.transition)) * 8)
+                transition_surf.set_colorkey((255,255,255))
+                self.display.blit(transition_surf, (0,0))
            # keys = pygame.key.get_pressed()
 
             screenshake_offset = (random.random() * self.screenshake - self.screenshake / 2, random.random() * self.screenshake - self.screenshake / 2)
