@@ -109,17 +109,19 @@ class Game:
             if not len(self.enemies):
                 self.transition += 1
                 if self.transition > 30:
-                    self.level += min(self.level + 1, len(os.listdir('data/maps')) - 1)
+                    self.level = min(self.level + 1, len(os.listdir('data/maps')) - 1)
                     self.load_level(self.level)
             if self.transition < 0:
                 self.transition += 1
 
             if self.dead:
                 self.dead += 1
-                if self.dead == 10:
+                if self.dead >= 10:
                     self.transition = min(30,self.transition + 1)
                 if self.dead > 40:
                     self.load_level(self.level)
+
+            
             #Camera
             self.scroll[0] += (self.player.rect().centerx - self.display.get_width() / 2 - self.scroll[0]) / 26
             self.scroll[1] += (self.player.rect().centery - self.display.get_height() / 2 - self.scroll[1]) / 26
