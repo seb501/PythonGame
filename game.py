@@ -43,10 +43,12 @@ class Game:
         
         self.player = Player(self , (50,50), (8,15))
         self.tilemap = Tilemap(self, tile_size=16)
+        self.Clouds =  Clouds(self.assets['clouds'], count =  15)
+        self.screenshake = 0
         self.load_level(0)
 
        
-        self.Clouds =  Clouds(self.assets['clouds'], count =  15)
+        
 
     def load_level(self, map_id):
         self.tilemap.load('data/maps/' + str(map_id) + '.json')
@@ -79,6 +81,9 @@ class Game:
         while True:
             
             self.display.fill((120,120,244))
+
+            self.screenshake = max(0, self.screenshake - 1)
+
             if self.dead:
                 self.dead += 1
                 if self.dead > 40:
@@ -116,7 +121,7 @@ class Game:
             for projectile in self.projectiles.copy():
                 projectile[0][0] += projectile[1]
                 projectile[2] += 1
-                img = self. assets['projectile']
+                img = self.assets['projectile']
                 self.display.blit(img, (projectile[0][0] - img.get_width() / 2 - render_scroll[0], projectile[0][1] - img.get_height() / 2 - render_scroll[1]))
                 if self.tilemap.solid_check(projectile[0]):
                     self.projectiles.remove(projectile)
@@ -128,6 +133,7 @@ class Game:
                     if self.player.rect().collidepoint(projectile[0]):
                         self.projectiles.remove(projectile)
                         self.dead += 1
+                        self.screenshake = max(16, self.screenshake)
                         for i in range(30):
                             angle = random.random() * math.pi * 2
                             speed = random.random() * 5
@@ -173,9 +179,10 @@ class Game:
                         self.movement[1] = False
                
 
-            keys = pygame.key.get_pressed()
+           # keys = pygame.key.get_pressed()
 
-            self.screen.blit(pygame.transform.scale(self.display, self.screen.get_size()), (0,0))
+            screenshake_offset = (random.random() * self.screenshake - self.screenshake / 2, random.random() * self.screenshake - self.screenshake / 2)
+            self.screen.blit(pygame.transform.scale(self.display, self.screen.get_size()), screenshake_offset)
             pygame.display.update()
             self.clock.tick(60)
 
