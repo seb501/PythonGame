@@ -52,13 +52,16 @@ class Game:
         self.tilemap.load('data/maps/' + str(map_id) + '.json')
         self.leaf_spawner = []
 
+        #tree leafs
         for tree in self.tilemap.extract([('large_decor', 2)], keep=True):
             self.leaf_spawner.append(pygame.Rect(4 + tree['pos'][0], 4 + tree['pos'][1],23,13 ))
 
+        #spawner 
         self.enemies = []
         for spawner in self.tilemap.extract([('spawners', 0),('spawners', 1)]):
             if spawner['variant'] == 00:
                 self.player.pos = spawner['pos']
+                self.player.air_time = 0
             else:
                 self.enemies.append(Enemy(self, spawner['pos'], (8,15)))
 
@@ -67,13 +70,19 @@ class Game:
         self.sparks = []
 
         self.scroll = [0,0]
+        self.dead = 0
+
+
     def run(self):
 
      
         while True:
             
             self.display.fill((120,120,244))
-            
+            if self.dead:
+                self.dead += 1
+                if self.dead > 40:
+                    self.load_level(0)
             #Camera
             self.scroll[0] += (self.player.rect().centerx - self.display.get_width() / 2 - self.scroll[0]) / 26
             self.scroll[1] += (self.player.rect().centery - self.display.get_height() / 2 - self.scroll[1]) / 26
@@ -94,12 +103,14 @@ class Game:
 
             #Enemy
             for enemy in self.enemies.copy():
-                enemy.update(self.tilemap, (0,0))
+                kill = enemy.update(self.tilemap, (0,0))
                 enemy.render(self.display, offset= render_scroll)
-
+                if kill: 
+                    self.enemies.remove(enemy)
             #Player
-            self.player.update(self.tilemap, (self.movement[1] - self.movement[0], 0))
-            self.player.render(self.display, offset=render_scroll)
+            if not self.dead:
+                self.player.update(self.tilemap, (self.movement[1] - self.movement[0], 0))
+                self.player.render(self.display, offset=render_scroll)
 
             # [[x, y], direction, timer]
             for projectile in self.projectiles.copy():
@@ -116,6 +127,7 @@ class Game:
                 elif abs(self.player.dashing) < 50:
                     if self.player.rect().collidepoint(projectile[0]):
                         self.projectiles.remove(projectile)
+                        self.dead += 1
                         for i in range(30):
                             angle = random.random() * math.pi * 2
                             speed = random.random() * 5
