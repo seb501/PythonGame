@@ -13,3 +13,9 @@ Current Objectives are :
 
 Youtube Video used as Source:
 https://www.youtube.com/watch?v=2gABYM5M0ww
+ 
+* Controls:
+    1. Game:
+        - A      -> Left
+        - D      -> Right
+        - Space  -> Jump
