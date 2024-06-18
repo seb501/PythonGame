@@ -19,3 +19,10 @@ https://www.youtube.com/watch?v=2gABYM5M0ww
         - A      -> Left
         - D      -> Right
         - Space  -> Jump
+
+    2. Editor:
+        - Mousscroll          -> change type
+        - Shift + Mousescroll -> change variant
+        - g                   -> switch grid/offgrid mode
+        - t                   -> autocomplete Tileset
+        
