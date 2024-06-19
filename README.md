@@ -19,6 +19,7 @@ https://www.youtube.com/watch?v=2gABYM5M0ww
         - A      -> Left
         - D      -> Right
         - Space  -> Jump
+        - v      -> Dashattack
 
     2. Editor:
         - Mousscroll          -> change type
